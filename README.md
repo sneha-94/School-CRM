@@ -110,8 +110,6 @@ This project is licensed under the MIT License. See the LICENSE file for more in
 ![image](https://github.com/user-attachments/assets/99f053d8-8917-4513-a79f-bf5154f1c9db)
 ![image](https://github.com/user-attachments/assets/d41d8b2a-0e40-487e-87ad-1a9e12caf153)
 
-![Dashboard](images/dashboard-screenshot.png)
-![Mock Test Interface](images/mock-test-screenshot.png)
 
 ---
 
