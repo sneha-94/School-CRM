@@ -111,6 +111,10 @@ This project is licensed under the MIT License. See the LICENSE file for more in
 ![image](https://github.com/user-attachments/assets/d41d8b2a-0e40-487e-87ad-1a9e12caf153)
 
 
+https://github.com/user-attachments/assets/727a661c-65e0-4cfc-bf13-4a6675a1f4a1
+
+
+
 ---
 
 ### We hope this School CRM System enhances the learning experience for students and simplifies communication between parents and the school!
