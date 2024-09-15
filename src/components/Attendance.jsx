@@ -1,173 +1,129 @@
 import React, { useState } from 'react';
 
-// Dummy backend response for attendance data
+// Updated dummy attendance data with additional dates and statuses
 const dummyAttendanceData = {
-  "2024-05-01": "present",
-  "2024-05-02": "absent",
-  "2024-05-03": "publicHoliday",
-  "2024-05-04": "present",
-  "2024-05-05": "present",
-  "2024-05-06": "notTracked",
-  "2024-05-07": "absent",
-  "2024-05-08": "publicHoliday",
-  // Add more dates as needed
+  "2024-09-01": "present",
+  "2024-09-02": "absent",
+  "2024-09-03": "public_holiday",
+  "2024-09-04": "present",
+  "2024-09-05": "absent",
+  // Add more dates and statuses here as needed
 };
 
 const Attendance = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [attendanceData, setAttendanceData] = useState(dummyAttendanceData);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  const getDaysInMonth = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const getDaysInMonth = (year, month) => {
     const days = new Date(year, month + 1, 0).getDate();
     return Array.from({ length: days }, (_, i) => new Date(year, month, i + 1));
   };
 
-  const getAttendanceStatus = (date) => {
-    const dateString = date.toISOString().split('T')[0];
-    return attendanceData[dateString] || 'unknown';
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'present': return '#4CAF50'; // Green for present
-      case 'absent': return '#F44336'; // Red for absent
-      case 'publicHoliday': return '#64B5F6'; // Light Blue for public holiday
-      case 'notTracked': return '#FFEB3B'; // Yellow for not tracked
-      default: return '#E0E0E0'; // Gray for unknown
-    }
-  };
-
   const handleDateClick = (date) => {
-    const status = getAttendanceStatus(date);
-    if (status === 'absent') {
-      alert('Notification sent to parent for absence.');
-    }
+    setSelectedDate(date.toISOString().split('T')[0]);
   };
 
-  const calculateAttendance = () => {
-    const total = Object.values(attendanceData).filter(status => status !== 'publicHoliday' && status !== 'notTracked').length;
-    const attended = Object.values(attendanceData).filter(status => status === 'present').length;
-    return `${attended}/${total}`;
+  const getAttendanceStatus = (date) => {
+    const status = dummyAttendanceData[date];
+    switch (status) {
+      case 'present':
+        return 'bg-green-200 text-green-800';
+      case 'absent':
+        return 'bg-red-200 text-red-800';
+      case 'public_holiday':
+        return 'bg-gray-200 text-gray-800';
+      default:
+        return 'bg-white text-gray-700';
+    }
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      width: '100vw',
-      backgroundColor: '#f9fafc'
-    }}>
-      <div style={{
-        width: '450px',
-        height: '500px',
-        padding: '24px',
-        backgroundColor: '#fff',
-        borderRadius: '16px',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        fontFamily: '"Poppins", sans-serif'
-      }}>
-        {/* Attendance Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#333' }}>Attendance</h2>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <span style={{ marginRight: '8px', fontSize: '1.5rem', color: '#2196F3' }}>📅</span>
-            <span style={{ fontWeight: '600', fontSize: '1rem', color: '#555' }}>{calculateAttendance()}</span>
-          </div>
+    <div className="flex flex-col items-center p-4 bg-gray-100 min-h-screen">
+      {/* Header */}
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">Attendance</h2>
+
+      {/* Month and Year Selectors */}
+      <div className="flex space-x-4 mb-6">
+        <div className="flex flex-col items-center">
+          <label className="font-semibold text-gray-600 mb-1">Select Month</label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+            className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+          >
+            {months.map((month, index) => (
+              <option key={index} value={index}>
+                {month}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Calendar Grid */}
-        <div style={{
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(7, 1fr)', 
-          gap: '8px', 
-          marginBottom: '24px', 
-          flexGrow: 1
-        }}>
+        <div className="flex flex-col items-center">
+          <label className="font-semibold text-gray-600 mb-1">Select Year</label>
+          <input
+            type="number"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+            className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+      </div>
+
+      {/* Calendar View */}
+      <div className="flex flex-col items-center mb-4 lg:mb-6">
+        <div className="text-lg font-semibold text-gray-800 mb-2">
+          {months[selectedMonth]} {selectedYear}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1 w-72">
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-            <div key={day} style={{ 
-              textAlign: 'center', 
-              fontWeight: '600', 
-              fontSize: '1rem', 
-              color: '#757575'
-            }}>
+            <div key={day} className="text-center font-semibold text-gray-500">
               {day}
             </div>
           ))}
-          {getDaysInMonth(currentMonth).map((date, index) => {
-            const status = getAttendanceStatus(date);
-            const statusColor = getStatusColor(status);
+
+          {getDaysInMonth(selectedYear, selectedMonth).map((date, index) => {
+            const dateKey = date.toISOString().split('T')[0];
+            const statusClass = getAttendanceStatus(dateKey);
             return (
               <div
                 key={index}
-                style={{
-                  aspectRatio: '1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '50%',
-                  cursor: 'pointer',
-                  backgroundColor: '#fff',
-                  fontSize: '0.9rem',
-                  color: '#333',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                }}
                 onClick={() => handleDateClick(date)}
-                onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'scale(1.1)';
-                  e.currentTarget.style.backgroundColor = statusColor;
-                  e.currentTarget.style.color = '#fff';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.backgroundColor = '#fff';
-                  e.currentTarget.style.color = '#333';
-                }}
+                className={`flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-transform
+                  ${statusClass}
+                  hover:scale-105`}
               >
-                {date.getDate()}
+                <span className="text-base">{date.getDate()}</span>
               </div>
             );
           })}
         </div>
+      </div>
 
-        {/* Legend */}
-        <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '16px' }}>
-          {['Present', 'Absent', 'Public Holiday', 'Not Tracked'].map((label, index) => (
-            <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{
-                width: '12px', 
-                height: '12px', 
-                borderRadius: '50%', 
-                backgroundColor: getStatusColor(label.toLowerCase().replace(' ', '')), 
-                marginBottom: '4px' 
-              }}></div>
-              <span style={{ fontSize: '0.7rem', color: '#757575' }}>{label}</span>
-            </div>
-          ))}
+      {/* Attendance Status Legend */}
+      <div className="flex space-x-2 mb-2 text-sm">
+        <div className="flex items-center">
+          <div className="w-3 h-3 rounded-full bg-green-200 mr-1"></div>
+          <span>Present</span>
         </div>
-
-        {/* Notification */}
-        <div style={{
-          padding: '16px',
-          border: '1px solid #E0E0E0',
-          borderRadius: '8px',
-          backgroundColor: '#F5F5F5',
-          fontSize: '0.85rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span style={{ fontSize: '1.2rem', color: '#2196F3' }}>ℹ️</span>
-          <p style={{ margin: 0, color: '#333' }}>
-            Click on a date for more details. Notifications are sent for absences.
-          </p>
+        <div className="flex items-center">
+          <div className="w-3 h-3 rounded-full bg-red-200 mr-1"></div>
+          <span>Absent</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-3 h-3 rounded-full bg-gray-200 mr-1"></div>
+          <span>Public Holiday</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-3 h-3 rounded-full bg-white border border-gray-300 mr-1"></div>
+          <span>Not Updated</span>
         </div>
       </div>
     </div>
