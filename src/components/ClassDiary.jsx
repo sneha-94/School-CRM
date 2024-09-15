@@ -31,130 +31,112 @@ const dummyDiaryData = {
 };
 
 const ClassDiary = () => {
-  const [currentSubject, setCurrentSubject] = useState('Math');
   const [selectedDate, setSelectedDate] = useState(null);
-  const [diaryData, setDiaryData] = useState(dummyDiaryData);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  const getDaysInMonth = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const getDaysInMonth = (year, month) => {
     const days = new Date(year, month + 1, 0).getDate();
     return Array.from({ length: days }, (_, i) => new Date(year, month, i + 1));
-  };
-
-  const getCurrentMonth = () => {
-    return new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
   };
 
   const handleDateClick = (date) => {
     setSelectedDate(date.toISOString().split('T')[0]);
   };
 
-  const getDiaryEntry = () => {
+  const getDiaryEntries = () => {
     if (selectedDate) {
-      return diaryData.subjects[currentSubject][selectedDate] || 'No diary entry for this date.';
+      return Object.keys(dummyDiaryData.subjects).map(subject => {
+        const entry = dummyDiaryData.subjects[subject][selectedDate];
+        return (
+          <div key={subject} className="mb-2">
+            <h4 className="text-sm font-semibold text-blue-600">{subject}</h4>
+            <p className="text-gray-700 text-sm">{entry || '-'}</p>
+          </div>
+        );
+      });
     }
     return 'Please select a date.';
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '24px',
-      backgroundColor: '#f9fafc',
-      height: '100vh'
-    }}>
-      {/* Class Diary Header */}
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#333', marginBottom: '16px' }}>Class Diary</h2>
+    <div className="flex flex-col items-center p-4 bg-gray-100 min-h-screen">
+      {/* Header */}
+      <h2 className="text-3xl font-bold text-gray-800 mb-8">Class Diary</h2>
 
-      {/* Subject Selector */}
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ fontWeight: '600', fontSize: '1rem', color: '#555' }}>Select Subject: </label>
-        <select
-          value={currentSubject}
-          onChange={(e) => setCurrentSubject(e.target.value)}
-          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
-        >
-          {Object.keys(diaryData.subjects).map((subject) => (
-            <option key={subject} value={subject}>
-              {subject}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Calendar View */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginBottom: '24px'
-      }}>
-        {/* Display month and year */}
-        <div style={{
-          fontSize: '1.2rem',
-          fontWeight: '600',
-          color: '#333',
-          marginBottom: '8px'
-        }}>
-          {getCurrentMonth()}
+      {/* Month and Year Selectors */}
+      <div className="flex space-x-4 mb-8">
+        <div className="flex flex-col items-center">
+          <label className="font-semibold text-gray-600 mb-1">Select Month</label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+            className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+          >
+            {months.map((month, index) => (
+              <option key={index} value={index}>
+                {month}
+              </option>
+            ))}
+          </select>
         </div>
-        
-        {/* Calendar Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(7, 1fr)',
-          gap: '8px',
-          width: '350px'
-        }}>
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-            <div key={day} style={{
-              textAlign: 'center',
-              fontWeight: '600',
-              fontSize: '1rem',
-              color: '#757575'
-            }}>{day}</div>
-          ))}
-          {getDaysInMonth(new Date()).map((date, index) => (
-            <div
-              key={index}
-              onClick={() => handleDateClick(date)}
-              style={{
-                aspectRatio: '1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '50%',
-                cursor: 'pointer',
-                backgroundColor: selectedDate === date.toISOString().split('T')[0] ? '#2196F3' : '#E0E0E0',
-                color: selectedDate === date.toISOString().split('T')[0] ? '#fff' : '#000',
-                transition: 'transform 0.3s ease',
-                fontSize: '1rem'
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              {date.getDate()}
-            </div>
-          ))}
+
+        <div className="flex flex-col items-center">
+          <label className="font-semibold text-gray-600 mb-1">Select Year</label>
+          <input
+            type="number"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+            className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+          />
         </div>
       </div>
 
-      {/* Diary Entry Display */}
-      <div style={{
-        width: '350px',
-        padding: '16px',
-        borderRadius: '8px',
-        backgroundColor: '#fff',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-        fontSize: '1rem'
-      }}>
-        <h3 style={{ marginBottom: '8px', color: '#2196F3' }}>Diary Entry</h3>
-        <p style={{ color: '#333' }}>{getDiaryEntry()}</p>
+      {/* Main Content - Calendar and Diary Entries */}
+      <div className="flex flex-col lg:flex-row lg:space-x-8 items-start">
+        {/* Calendar View */}
+        <div className="flex flex-col items-center mb-6 lg:mb-0">
+          <div className="text-lg font-semibold text-gray-800 mb-2">
+            {months[selectedMonth]} {selectedYear}
+          </div>
+
+          <div className="grid grid-cols-7 gap-2 w-72">
+            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+              <div key={day} className="text-center font-semibold text-gray-500">
+                {day}
+              </div>
+            ))}
+
+            {getDaysInMonth(selectedYear, selectedMonth).map((date, index) => {
+              const dateKey = date.toISOString().split('T')[0];
+              const hasEntry = Object.values(dummyDiaryData.subjects).some(subjects => subjects[dateKey]);
+              return (
+                <div
+                  key={index}
+                  onClick={() => handleDateClick(date)}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-transform
+                    ${selectedDate === dateKey ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}
+                    ${hasEntry ? 'border-blue-500 border' : ''}
+                    ${!hasEntry ? 'border-none' : ''}
+                    hover:scale-105`}
+                >
+                  <span className="text-base">{date.getDate()}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Diary Entries Display */}
+        <div className="w-full lg:w-80 p-4 bg-white shadow-lg rounded-md">
+          <h3 className="text-xl font-semibold text-blue-500 mb-4">Diary Entries</h3>
+          {getDiaryEntries()}
+        </div>
       </div>
     </div>
   );
