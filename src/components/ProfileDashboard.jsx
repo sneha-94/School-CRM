@@ -25,7 +25,7 @@ const ProfileDashboard = () => {
       email: 'robertsmith@gmail.com'
     },
     address: '123 Main St, Springfield, USA',
-    profilePicture: 'https://via.placeholder.com/150', // Dummy profile image
+    profilePicture: 'https://www.w3schools.com/howto/img_avatar.png', // Dummy profile image
   };
 
   return (
