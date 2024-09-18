@@ -17,9 +17,9 @@ import Home from './pages/Home';
 
 const App = () => {
   const studentName = "John Doe"; // Replace with dynamic data as needed
-  const profilePic = "/path/to/profile-pic.jpg"; // Replace with dynamic data as needed
+  const profilePic = "https://www.w3schools.com/howto/img_avatar.png"; // Sample profile image
   const schoolName = "My School";
-  const schoolLogo = "/path/to/school-logo.png"; // Replace with dynamic data as needed
+  const schoolLogo = "https://i.pinimg.com/originals/48/a3/54/48a354314bb3517dabc705eb3ee8b968.jpg"; // Sample school logo image
 
   const location = useLocation();
   const hideHeaderPaths = ["/", "/login", "/signup", "/dashboard"];
