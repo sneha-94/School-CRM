@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+import { Bar } from 'react-chartjs-2';
 import { CheckCircleIcon, XCircleIcon, DocumentTextIcon } from '@heroicons/react/solid';
+import 'chart.js/auto'; // Automatically register all necessary components
+import { motion } from 'framer-motion';
 
 // Sample data for exams
 const examsData = [
@@ -9,7 +12,11 @@ const examsData = [
     examName: 'Algebra Test',
     date: '2024-09-10',
     status: 'Completed',
-    totalScore: 95,
+    scores: {
+      Math: 95,
+      Science: 88,
+      History: 92,
+    },
     maxScore: 100,
     grade: 'A',
   },
@@ -19,7 +26,11 @@ const examsData = [
     examName: 'Physics Midterm',
     date: '2024-09-12',
     status: 'Pending',
-    totalScore: null,
+    scores: {
+      Math: null,
+      Science: null,
+      History: null,
+    },
     maxScore: 100,
     grade: null,
   },
@@ -29,7 +40,11 @@ const examsData = [
     examName: 'Renaissance Quiz',
     date: '2024-09-15',
     status: 'Completed',
-    totalScore: 88,
+    scores: {
+      Math: 88,
+      Science: 92,
+      History: 85,
+    },
     maxScore: 100,
     grade: 'B+',
   },
@@ -43,17 +58,52 @@ const ExamsAndMarks = () => {
     setSelectedExam(exam);
   };
 
-  return (
-    <div className="flex flex-col items-center p-6">
-      {/* Exams Dashboard Header */}
-      <h1 className="text-2xl font-bold text-blue-600 mb-6">Exams Dashboard</h1>
+  // Prepare data for the bar graph
+  const chartData = {
+    labels: examsData.map(exam => exam.examName),
+    datasets: [
+      {
+        label: 'Math',
+        data: examsData.map(exam => exam.scores.Math !== null ? exam.scores.Math : 0), // Use 0 if score is null
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Science',
+        data: examsData.map(exam => exam.scores.Science !== null ? exam.scores.Science : 0), // Use 0 if score is null
+        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+        borderColor: 'rgba(255, 159, 64, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'History',
+        data: examsData.map(exam => exam.scores.History !== null ? exam.scores.History : 0), // Use 0 if score is null
+        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
 
+  return (
+    <div className="flex flex-col items-center p-6 bg-gradient-to-r from-blue-50 to-white min-h-screen">
+      {/* Exams Dashboard Header */}
+      <motion.h2 
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-3xl font-bold text-blue-600 mb-6 flex items-center"
+      >
+      <h1 className="text-3xl font-bold text-blue-600 mb-8 ">Exams Dashboard</h1>
+
+      </motion.h2>
       {/* Exams List */}
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-3xl mb-6">
         {examsData.map((exam) => (
           <div
             key={exam.id}
-            className="flex justify-between items-center p-4 mb-4 bg-gray-100 shadow rounded-lg hover:bg-gray-200 cursor-pointer transition"
+            className="flex justify-between items-center p-4 mb-4 bg-white shadow-lg rounded-lg hover:bg-blue-100 cursor-pointer transition-transform transform hover:scale-105"
             onClick={() => handleExamSelect(exam)}
           >
             <div className="text-lg font-semibold">{exam.examName}</div>
@@ -75,17 +125,40 @@ const ExamsAndMarks = () => {
         ))}
       </div>
 
+      {/* Bar Graph for Marks */}
+      <div className="w-full max-w-3xl mb-6">
+        <Bar data={chartData} options={{
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Exam Scores',
+            },
+          },
+        }} />
+      </div>
+
       {/* Exam Details View */}
       {selectedExam && (
-        <div className="w-full max-w-lg mt-6 p-4 bg-white shadow-lg rounded-lg">
+        <div className="w-full max-w-lg mt-6 p-6 bg-white shadow-lg rounded-lg transition-transform transform hover:scale-105">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">{selectedExam.examName}</h2>
-          <p className="text-md text-gray-800 mb-2">Subject: {selectedExam.subject}</p>
-          <p className="text-md text-gray-800 mb-4">Date: {selectedExam.date}</p>
+          <p className="text-md text-gray-800 mb-2">Subject: <span className="font-semibold">{selectedExam.subject}</span></p>
+          <p className="text-md text-gray-800 mb-4">Date: <span className="font-semibold">{selectedExam.date}</span></p>
           {selectedExam.status === 'Completed' ? (
             <>
               <div className="mb-4">
-                <p className="text-lg font-semibold">Total Score: {selectedExam.totalScore} / {selectedExam.maxScore}</p>
-                <p className="text-lg font-semibold">Grade: {selectedExam.grade}</p>
+                <p className="text-lg font-semibold">Scores:</p>
+                <ul>
+                  <li>Math: <span className="text-blue-600">{selectedExam.scores.Math}</span> / {selectedExam.maxScore}</li>
+                  <li>Science: <span className="text-blue-600">{selectedExam.scores.Science}</span> / {selectedExam.maxScore}</li>
+                  <li>History: <span className="text-blue-600">{selectedExam.scores.History}</span> / {selectedExam.maxScore}</li>
+                </ul>
+              </div>
+              <div className="mb-4">
+                <p className="text-lg font-semibold">Grade: <span className="text-blue-600">{selectedExam.grade}</span></p>
               </div>
               <div className="mt-6 text-gray-600">
                 <DocumentTextIcon className="h-6 w-6 inline-block mr-2" />
