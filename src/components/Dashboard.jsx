@@ -1,10 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CalendarIcon, BellIcon, CreditCardIcon, UserIcon, DocumentTextIcon, LightBulbIcon, ClipboardListIcon } from '@heroicons/react/solid';
+import { 
+  CalendarIcon, BellIcon, CreditCardIcon, UserIcon, 
+  DocumentTextIcon, LightBulbIcon, ClipboardListIcon 
+} from '@heroicons/react/solid';
 
 const Dashboard = ({ user }) => {
-  const userName = user?.name || 'Guest';
-  const userGender = user?.gender || 'female';
+  const userName = user?.name || 'John Doe';
+  const userGender = user?.gender || 'male';
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
@@ -14,18 +17,23 @@ const Dashboard = ({ user }) => {
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 bg-blue-600 text-white">
-        <div className="flex items-center space-x-4">
+      <header className="flex items-center justify-between p-2 bg-blue-600 text-white ">
+        {/* Logo and School Name */}
+        <div className="flex flex-col items-center ">
           <img
-            src="/path/to/school-logo.png" // Replace with the actual logo path
+            src="https://i.pinimg.com/originals/48/a3/54/48a354314bb3517dabc705eb3ee8b968.jpg" // Sample school logo
             alt="School Logo"
-            className="h-10 w-10 rounded-full"
+            className="h-9 w-9 rounded-full"
           />
-          <h1 className="text-2xl font-bold">School/College Name</h1>
+          <h1 className="text-xl font-bold">School</h1>
         </div>
-        <div className="flex flex-col items-center space-x-4">
+
+        {/* Profile Picture and User Name */}
+        <div className="flex flex-col items-center ">
           <img
-            src={userGender === 'male' ? '/path/to/male-profile.png' : '/path/to/female-profile.png'} // Replace with actual paths
+            src={userGender === 'male' 
+              ? 'https://www.w3schools.com/howto/img_avatar.png'  // Sample male profile picture
+              : 'https://th.bing.com/th/id/OIP.p2m_4WGdDauoB1jZ9LrjuQHaHa?w=195&h=195&c=7&r=0&o=5&dpr=1.5&pid=1.7'} // Sample female profile picture
             alt="Profile"
             className="h-9 w-9 rounded-full cursor-pointer"
             onClick={handleProfileClick}
@@ -35,7 +43,7 @@ const Dashboard = ({ user }) => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 ">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Timetable */}
           <Link to="/timetable" className="bg-white shadow-lg rounded-lg p-4 flex items-center space-x-4">
