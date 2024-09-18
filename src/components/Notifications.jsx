@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaBell, FaCalendarAlt, FaDollarSign, FaExclamationCircle } from 'react-icons/fa';
+import { FaBell, FaCalendarAlt, FaDollarSign, FaExclamationCircle, FaTable } from 'react-icons/fa';
 
 const Notifications = () => {
   // Dummy data for demonstration. In production, this data would come from an API.
@@ -32,6 +32,13 @@ const Notifications = () => {
       date: '2024-09-15',
       read: true,
     },
+    {
+      id: 5,
+      type: 'Timetable',
+      message: 'Timetable 25th September.',
+      date: '2024-09-14',
+      read: true,
+    },
   ]);
 
   // Mark notification as read
@@ -51,6 +58,8 @@ const Notifications = () => {
         return <FaDollarSign className="text-green-500" />;
       case 'attendance':
         return <FaExclamationCircle className="text-red-500" />;
+      case 'Timetable':
+        return <FaTable className='text-yellow-500'/>;
       case 'event':
         return <FaBell className="text-yellow-500" />;
       default:
@@ -67,11 +76,11 @@ const Notifications = () => {
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`p-4 rounded-lg shadow flex items-center justify-between ${
+              className={`p-4 rounded-lg shadow flex items-center justify-between hover:bg-blue-100 cursor-pointer transition-transform transform hover:scale-105 ${
                 notification.read ? 'bg-gray-100' : 'bg-blue-50'
               }`}
             >
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 ">
                 {/* Notification Icon */}
                 <div className="text-2xl">
                   {getIcon(notification.type)}
