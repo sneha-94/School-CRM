@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion} from 'framer-motion';
 
 const Fee = () => {
     // Sample fee data
@@ -23,7 +24,15 @@ const Fee = () => {
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto">
+             <motion.h2 
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-3xl font-bold text-blue-600 mb-6 flex items-center"
+      >
             <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Fee Status</h2>
+            </motion.h2>
+            {/* <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Fee Status</h2> */}
             <ul>
                 {fees.map((fee, index) => (
                     <li key={index} className="mb-4">
