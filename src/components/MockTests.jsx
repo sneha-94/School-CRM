@@ -79,16 +79,16 @@ const MockTests = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-6">
+    <div className="flex flex-col items-center p-6 bg-gradient-to-r from-blue-50 to-white min-h-screen">
       {/* Mock Test Tab Header */}
-      <h1 className="text-2xl font-bold text-blue-600 mb-6">Mock Tests</h1>
+      <h1 className="text-3xl font-bold text-blue-600 mb-6">Mock Tests</h1>
 
       {/* Test List */}
       <div className="w-full max-w-md mb-6">
         {mockTestsData.map((test) => (
           <div
             key={test.id}
-            className="flex justify-between items-center p-4 mb-4 bg-gray-100 shadow rounded-lg hover:bg-blue-50 cursor-pointer transition"
+            className="flex justify-between items-center p-4 mb-4 bg-white shadow-lg rounded-lg hover:bg-blue-100 cursor-pointer transition duration-300"
             onClick={() => handleTestSelect(test)}
           >
             <div className="text-lg font-semibold">{test.title}</div>
@@ -101,7 +101,7 @@ const MockTests = () => {
 
       {/* Question View */}
       {selectedTest && (
-        <div className="w-full max-w-lg">
+        <div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">{selectedTest.title}</h2>
           {selectedTest.questions.map((question) => (
             <div key={question.id} className="mb-6">
@@ -110,7 +110,7 @@ const MockTests = () => {
                 {Object.keys(question.options).map((key) => (
                   <button
                     key={key}
-                    className={`p-2 rounded-lg border text-left ${
+                    className={`p-3 rounded-lg border text-left transition duration-300 ${
                       selectedAnswers[question.id]
                         ? selectedAnswers[question.id] === key
                           ? selectedAnswers[question.id] === question.answer
@@ -147,7 +147,7 @@ const MockTests = () => {
 
           {/* Submit Button */}
           <button
-            className="w-full p-3 mt-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            className="w-full p-3 mt-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
             onClick={calculateScore}
           >
             Submit Test
