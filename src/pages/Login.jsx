@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // For making API requests
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; // For Google OAuth
+import ThemeToggle from '../components/ThemeToggle';
 
 const Login = () => {
   // State for email, OTP, and managing the login stage
@@ -72,44 +73,50 @@ const Login = () => {
 
   return (
     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}> {/* Add your Google client ID here */}
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
-          <h2 className="text-2xl font-bold text-center mb-6">Login to Your Account</h2>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+        {/* Theme Toggle - Top Right Corner */}
+        <div className="absolute top-4 right-4 flex items-center space-x-2">
+          <ThemeToggle />
+          <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">Theme</span>
+        </div>
+        
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 max-w-md w-full border border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Login to Your Account</h2>
 
           {/* Form for email submission or OTP input */}
           {isOtpSent ? (
             // OTP input form
             <form onSubmit={handleOtpSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700">OTP</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-medium">OTP</label>
                 <input
                   type="text"
                   name="otp"
                   value={formData.otp}
                   onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded-md"
+                  className="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
                   placeholder="Enter the OTP sent to your email"
                   required
                 />
               </div>
-              <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Verify OTP</button>
+              <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white py-3 rounded-md font-medium transition-colors duration-200">Verify OTP</button>
             </form>
           ) : (
             // Email input form
             <form onSubmit={handleEmailSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700">Email</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-medium">Email</label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded-md"
+                  className="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
                   placeholder="Enter your email"
                   required
                 />
               </div>
-              <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Send OTP</button>
+              <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white py-3 rounded-md font-medium transition-colors duration-200">Send OTP</button>
             </form>
           )}
 
@@ -122,7 +129,7 @@ const Login = () => {
           </div>
 
           <div className="text-center mt-4">
-            <p>Don't have an account? <a href="/signup" className="text-blue-500 hover:underline">Sign Up</a></p>
+            <p className="text-gray-600 dark:text-gray-300">Don't have an account? <a href="/signup" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors duration-200">Sign Up</a></p>
           </div>
         </div>
       </div>

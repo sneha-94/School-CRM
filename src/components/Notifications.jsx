@@ -53,34 +53,36 @@ const Notifications = () => {
   const getIcon = (type) => {
     switch (type) {
       case 'exam':
-        return <FaCalendarAlt className="text-blue-500" />;
+        return <FaCalendarAlt className="text-blue-500 dark:text-blue-400" />;
       case 'fee':
-        return <FaDollarSign className="text-green-500" />;
+        return <FaDollarSign className="text-green-500 dark:text-green-400" />;
       case 'attendance':
-        return <FaExclamationCircle className="text-red-500" />;
+        return <FaExclamationCircle className="text-red-500 dark:text-red-400" />;
       case 'Timetable':
-        return <FaTable className='text-yellow-500'/>;
+        return <FaTable className='text-yellow-500 dark:text-yellow-400'/>;
       case 'event':
-        return <FaBell className="text-yellow-500" />;
+        return <FaBell className="text-yellow-500 dark:text-yellow-400" />;
       default:
-        return <FaBell className="text-gray-500" />;
+        return <FaBell className="text-gray-500 dark:text-gray-400" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-lg p-8 max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6">Notifications</h2>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 max-w-4xl mx-auto border border-gray-200 dark:border-gray-700">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Notifications</h2>
 
         <div className="space-y-4">
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`p-4 rounded-lg shadow flex items-center justify-between hover:bg-blue-100 cursor-pointer transition-transform transform hover:scale-105 ${
-                notification.read ? 'bg-gray-100' : 'bg-blue-50'
+              className={`p-4 rounded-lg shadow flex items-center justify-between hover:bg-blue-100 dark:hover:bg-blue-900/20 cursor-pointer transition-all duration-200 transform hover:scale-[1.02] ${
+                notification.read 
+                  ? 'bg-gray-100 dark:bg-gray-700' 
+                  : 'bg-blue-50 dark:bg-blue-900/30'
               }`}
             >
-              <div className="flex items-center space-x-4 ">
+              <div className="flex items-center space-x-4">
                 {/* Notification Icon */}
                 <div className="text-2xl">
                   {getIcon(notification.type)}
@@ -88,8 +90,8 @@ const Notifications = () => {
 
                 {/* Notification Message */}
                 <div>
-                  <p className="font-medium">{notification.message}</p>
-                  <p className="text-gray-500 text-sm">{new Date(notification.date).toLocaleDateString()}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{notification.message}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{new Date(notification.date).toLocaleDateString()}</p>
                 </div>
               </div>
 
@@ -97,9 +99,9 @@ const Notifications = () => {
               {!notification.read && (
                 <button
                   onClick={() => markAsRead(notification.id)}
-                  className="text-blue-500 hover:text-blue-700"
+                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
                 >
-                  Mark as Read
+                  Mark as read
                 </button>
               )}
             </div>

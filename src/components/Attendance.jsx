@@ -53,83 +53,43 @@ const Attendance = () => {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      width: '100vw',
-      backgroundColor: '#f9fafc'
-    }}>
-      <div style={{
-        width: '450px',
-        height: '500px',
-        padding: '24px',
-        backgroundColor: '#fff',
-        borderRadius: '16px',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        fontFamily: '"Poppins", sans-serif'
-      }}>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex justify-center items-center p-6 transition-colors duration-300">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
         {/* Attendance Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#333' }}>Attendance</h2>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <span style={{ marginRight: '8px', fontSize: '1.5rem', color: '#2196F3' }}>📅</span>
-            <span style={{ fontWeight: '600', fontSize: '1rem', color: '#555' }}>{calculateAttendance()}</span>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Attendance</h2>
+          <div className="flex items-center">
+            <span className="mr-2 text-2xl">📅</span>
+            <span className="font-semibold text-lg text-gray-600 dark:text-gray-300">{calculateAttendance()}</span>
           </div>
         </div>
 
         {/* Calendar Grid */}
-        <div style={{
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(7, 1fr)', 
-          gap: '8px', 
-          marginBottom: '24px', 
-          flexGrow: 1
-        }}>
+        <div className="grid grid-cols-7 gap-2 mb-6">
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-            <div key={day} style={{ 
-              textAlign: 'center', 
-              fontWeight: '600', 
-              fontSize: '1rem', 
-              color: '#757575'
-            }}>
+            <div key={day} className="text-center font-semibold text-gray-600 dark:text-gray-400">
               {day}
             </div>
           ))}
-          {getDaysInMonth(currentMonth).map((date, index) => {
+          
+          {getDaysInMonth(currentMonth).map(date => {
             const status = getAttendanceStatus(date);
-            const statusColor = getStatusColor(status);
+            const isToday = date.toDateString() === new Date().toDateString();
+            
             return (
               <div
-                key={index}
-                style={{
-                  aspectRatio: '1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '50%',
-                  cursor: 'pointer',
-                  backgroundColor: '#fff',
-                  fontSize: '0.9rem',
-                  color: '#333',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                }}
+                key={date.toISOString()}
                 onClick={() => handleDateClick(date)}
-                onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'scale(1.1)';
-                  e.currentTarget.style.backgroundColor = statusColor;
-                  e.currentTarget.style.color = '#fff';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.backgroundColor = '#fff';
-                  e.currentTarget.style.color = '#333';
-                }}
+                className={`
+                  aspect-square rounded-lg flex items-center justify-center text-sm font-medium cursor-pointer transition-all duration-200
+                  ${isToday ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''}
+                  ${status === 'present' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : ''}
+                  ${status === 'absent' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200' : ''}
+                  ${status === 'publicHoliday' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200' : ''}
+                  ${status === 'notTracked' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200' : ''}
+                  ${status === 'unknown' ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' : ''}
+                  hover:scale-105 hover:shadow-md
+                `}
               >
                 {date.getDate()}
               </div>
@@ -138,36 +98,45 @@ const Attendance = () => {
         </div>
 
         {/* Legend */}
-        <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '16px' }}>
-          {['Present', 'Absent', 'Public Holiday', 'Not Tracked'].map((label, index) => (
-            <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{
-                width: '12px', 
-                height: '12px', 
-                borderRadius: '50%', 
-                backgroundColor: getStatusColor(label.toLowerCase().replace(' ', '')), 
-                marginBottom: '4px' 
-              }}></div>
-              <span style={{ fontSize: '0.7rem', color: '#757575' }}>{label}</span>
+        <div className="space-y-2">
+          <h3 className="font-semibold text-gray-800 dark:text-white mb-3">Legend</h3>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-green-100 dark:bg-green-900/30 rounded"></div>
+              <span className="text-gray-700 dark:text-gray-300">Present</span>
             </div>
-          ))}
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-red-100 dark:bg-red-900/30 rounded"></div>
+              <span className="text-gray-700 dark:text-gray-300">Absent</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-blue-100 dark:bg-blue-900/30 rounded"></div>
+              <span className="text-gray-700 dark:text-gray-300">Holiday</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-yellow-100 dark:bg-yellow-900/30 rounded"></div>
+              <span className="text-gray-700 dark:text-gray-300">Not Tracked</span>
+            </div>
+          </div>
         </div>
 
-        {/* Notification */}
-        <div style={{
-          padding: '16px',
-          border: '1px solid #E0E0E0',
-          borderRadius: '8px',
-          backgroundColor: '#F5F5F5',
-          fontSize: '0.85rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span style={{ fontSize: '1.2rem', color: '#2196F3' }}>ℹ️</span>
-          <p style={{ margin: 0, color: '#333' }}>
-            Click on a date for more details. Notifications are sent for absences.
-          </p>
+        {/* Navigation */}
+        <div className="flex justify-between items-center mt-6">
+          <button
+            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            Previous
+          </button>
+          <span className="font-semibold text-gray-800 dark:text-white">
+            {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          </span>
+          <button
+            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
