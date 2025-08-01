@@ -67,6 +67,7 @@ const sampleSchedule = {
   },
 };
 
+
 const subjectIcons = {
   'Math': <CalculatorIcon className="h-5 w-5 text-blue-600" />,
   'English': <BookOpenIcon className="h-5 w-5 text-green-600" />,
