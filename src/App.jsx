@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import ClassDiary from './components/ClassDiary';
@@ -25,7 +26,7 @@ const App = () => {
   const hideHeaderPaths = ["/", "/login", "/signup", "/dashboard"];
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       {!hideHeaderPaths.includes(location.pathname) && (
         <Header 
           studentName={studentName} 
@@ -49,14 +50,16 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Home />} />
       </Routes>
-    </>
+    </div>
   );
 };
 
 const AppWrapper = () => (
-  <Router>
-    <App />
-  </Router>
+  <ThemeProvider>
+    <Router>
+      <App />
+    </Router>
+  </ThemeProvider>
 );
 
 export default AppWrapper;
