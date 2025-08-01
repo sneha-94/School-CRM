@@ -8,8 +8,7 @@ import {
   CalendarIcon,
   DocumentTextIcon,
   CurrencyDollarIcon,
-  BellIcon,
-  UserIcon
+  BellIcon
 } from '@heroicons/react/solid';
 
 const Chatbot = () => {
