@@ -12,6 +12,7 @@ import ProfileDashboard from './components/ProfileDashboard';
 import Notifications from './components/Notifications';
 import Timetable from './components/Timetable';
 import Fee from './components/Fee';
+import Chatbot from './components/Chatbot';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Home from './pages/Home';
@@ -50,6 +51,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Home />} />
       </Routes>
+      <Chatbot />
     </div>
   );
 };
