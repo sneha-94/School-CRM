@@ -1,225 +1,156 @@
-import React, { useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { CheckCircleIcon, XCircleIcon, DocumentTextIcon } from '@heroicons/react/solid';
-import 'chart.js/auto'; // Automatically register all necessary components
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 
-// Sample data for exams
-const examsData = [
-  {
-    id: 1,
-    subject: 'Math',
-    examName: 'Algebra Test',
-    date: '2024-09-10',
-    status: 'Completed',
-    scores: {
-      Math: 95,
-      Science: 88,
-      History: 92,
-    },
-    maxScore: 100,
-    grade: 'A',
-  },
-  {
-    id: 2,
-    subject: 'Science',
-    examName: 'Physics Midterm',
-    date: '2024-09-12',
-    status: 'Pending',
-    scores: {
-      Math: null,
-      Science: null,
-      History: null,
-    },
-    maxScore: 100,
-    grade: null,
-  },
-  {
-    id: 3,
-    subject: 'History',
-    examName: 'Renaissance Quiz',
-    date: '2024-09-15',
-    status: 'Completed',
-    scores: {
-      Math: 88,
-      Science: 92,
-      History: 85,
-    },
-    maxScore: 100,
-    grade: 'B+',
-  },
-];
+const API_BASE_URL = 'http://localhost:5000/api';
 
 const ExamsAndMarks = () => {
-  const [selectedExam, setSelectedExam] = useState(null);
-
-  // Handle selecting an exam for details view
-  const handleExamSelect = (exam) => {
-    setSelectedExam(exam);
+  const [exams, setExams] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    subject: '',
+    marksObtained: '',
+    maxMarks: 100,
+    examDate: '',
+    examName: ''
+  });
+  const [editingId, setEditingId] = useState(null);
+  
+  const fetchExams = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Please log in');
+      const res = await fetch(`${API_BASE_URL}/exams`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to fetch exams');
+      const data = await res.json();
+      setExams(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  // Prepare data for the bar graph
-  const chartData = {
-    labels: examsData.map(exam => exam.examName),
-    datasets: [
-      {
-        label: 'Math',
-        data: examsData.map(exam => exam.scores.Math !== null ? exam.scores.Math : 0), // Use 0 if score is null
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-      },
-      {
-        label: 'Science',
-        data: examsData.map(exam => exam.scores.Science !== null ? exam.scores.Science : 0), // Use 0 if score is null
-        backgroundColor: 'rgba(255, 159, 64, 0.6)',
-        borderColor: 'rgba(255, 159, 64, 1)',
-        borderWidth: 1,
-      },
-      {
-        label: 'History',
-        data: examsData.map(exam => exam.scores.History !== null ? exam.scores.History : 0), // Use 0 if score is null
-        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
-      },
-    ],
+  
+  useEffect(() => { fetchExams(); }, []);
+  
+  const handleInputChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Please log in');
+      const method = editingId ? 'PUT' : 'POST';
+      const url = editingId ? `${API_BASE_URL}/exams/${editingId}` : `${API_BASE_URL}/exams`;
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      if (!res.ok) throw new Error('Failed to save exam');
+      setFormData({ subject: '', marksObtained: '', maxMarks: 100, examDate: '', examName: '' });
+      setEditingId(null);
+      fetchExams();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+  
+  const handleEdit = exam => {
+    setFormData({
+      subject: exam.subject,
+      marksObtained: exam.marksObtained,
+      maxMarks: exam.maxMarks,
+      examDate: exam.examDate ? exam.examDate.substring(0, 10) : '',
+      examName: exam.examName || ''
+    });
+    setEditingId(exam.id);
+  };
+  
+  const handleDelete = async id => {
+    if (!window.confirm('Delete this exam record?')) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Please log in');
+      const res = await fetch(`${API_BASE_URL}/exams/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to delete exam');
+      fetchExams();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+  
   return (
-    <div className="flex flex-col items-center p-6 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
-      {/* Exams Dashboard Header */}
-      <motion.h2 
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-6 flex items-center"
-      >
-        <DocumentTextIcon className="mr-2 h-8 w-8" />
-        Exams Dashboard
-      </motion.h2>
-
-      <div className="w-full max-w-6xl">
-        {/* Exam List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {examsData.map((exam) => (
-            <motion.div
-              key={exam.id}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg cursor-pointer border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300"
-              onClick={() => handleExamSelect(exam)}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{exam.examName}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{exam.subject}</p>
-                </div>
-                <div className="flex items-center">
-                  {exam.status === 'Completed' ? (
-                    <CheckCircleIcon className="h-6 w-6 text-green-500 dark:text-green-400" />
-                  ) : (
-                    <XCircleIcon className="h-6 w-6 text-yellow-500 dark:text-yellow-400" />
-                  )}
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <strong className="text-gray-900 dark:text-white">Date:</strong> {exam.date}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <strong className="text-gray-900 dark:text-white">Status:</strong> {exam.status}
-                </p>
-                {exam.grade && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    <strong className="text-gray-900 dark:text-white">Grade:</strong> {exam.grade}
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Performance Chart */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Performance Overview</h3>
-          <div className="h-64">
-            <Bar 
-              data={chartData} 
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    max: 100,
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.2)',
-                    },
-                    ticks: {
-                      color: 'rgba(156, 163, 175, 0.8)',
-                    },
-                  },
-                  x: {
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.2)',
-                    },
-                    ticks: {
-                      color: 'rgba(156, 163, 175, 0.8)',
-                    },
-                  },
-                },
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: 'rgba(156, 163, 175, 0.8)',
-                    },
-                  },
-                },
-              }}
-            />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 p-6">
+      <div className="w-full max-w-4xl bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">📚 Exams & Marks Management</h2>
+        {error && <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded-lg">{error}</div>}
+        
+        <form onSubmit={handleSubmit} className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <input name="subject" value={formData.subject} onChange={handleInputChange} placeholder="Subject" className="p-3 rounded border dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600" required />
+          <input name="marksObtained" value={formData.marksObtained} onChange={handleInputChange} placeholder="Marks Obtained" type="number" min="0" max={formData.maxMarks} className="p-3 rounded border dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600" required />
+          <input name="maxMarks" value={formData.maxMarks} onChange={handleInputChange} placeholder="Max Marks" type="number" min="1" className="p-3 rounded border dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600" required />
+          <input name="examDate" value={formData.examDate} onChange={handleInputChange} placeholder="Exam Date" type="date" className="p-3 rounded border dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600" required />
+          <input name="examName" value={formData.examName} onChange={handleInputChange} placeholder="Exam Name (optional)" className="p-3 rounded border dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600" />
+          <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded transition-colors duration-200">{editingId ? '✏️ Update' : '➕ Add'} Exam</button>
+        </form>
+        
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Loading exams...</p>
           </div>
-        </div>
-
-        {/* Selected Exam Details */}
-        {selectedExam && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
-          >
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              {selectedExam.examName} - Details
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Exam Information</h4>
-                <div className="space-y-2 text-gray-700 dark:text-gray-300">
-                  <p><strong>Subject:</strong> {selectedExam.subject}</p>
-                  <p><strong>Date:</strong> {selectedExam.date}</p>
-                  <p><strong>Status:</strong> {selectedExam.status}</p>
-                  <p><strong>Max Score:</strong> {selectedExam.maxScore}</p>
-                  {selectedExam.grade && <p><strong>Grade:</strong> {selectedExam.grade}</p>}
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Scores</h4>
-                <div className="space-y-2">
-                  {Object.entries(selectedExam.scores).map(([subject, score]) => (
-                    <div key={subject} className="flex justify-between items-center">
-                      <span className="text-gray-700 dark:text-gray-300">{subject}:</span>
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        {score !== null ? `${score}/${selectedExam.maxScore}` : 'Pending'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
+        ) : exams.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600 dark:text-gray-400">No exam records found. Add your first exam above!</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse bg-white dark:bg-gray-800 rounded-lg">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-gray-700">
+                  <th className="p-3 font-semibold text-gray-700 dark:text-gray-300">Subject</th>
+                  <th className="p-3 font-semibold text-gray-700 dark:text-gray-300">Exam Name</th>
+                  <th className="p-3 font-semibold text-gray-700 dark:text-gray-300">Score</th>
+                  <th className="p-3 font-semibold text-gray-700 dark:text-gray-300">Percentage</th>
+                  <th className="p-3 font-semibold text-gray-700 dark:text-gray-300">Date</th>
+                  <th className="p-3 font-semibold text-gray-700 dark:text-gray-300">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {exams.map(exam => {
+                  const percentage = Math.round((exam.marksObtained / exam.maxMarks) * 100);
+                  const gradeColor = percentage >= 90 ? 'text-green-600' : percentage >= 75 ? 'text-blue-600' : percentage >= 60 ? 'text-yellow-600' : 'text-red-600';
+                  
+                  return (
+                    <tr key={exam.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="p-3 text-gray-800 dark:text-gray-200">{exam.subject}</td>
+                      <td className="p-3 text-gray-800 dark:text-gray-200">{exam.examName || '-'}</td>
+                      <td className="p-3 text-gray-800 dark:text-gray-200">{exam.marksObtained}/{exam.maxMarks}</td>
+                      <td className={`p-3 font-semibold ${gradeColor}`}>{percentage}%</td>
+                      <td className="p-3 text-gray-800 dark:text-gray-200">{exam.examDate ? new Date(exam.examDate).toLocaleDateString() : '-'}</td>
+                      <td className="p-3 space-x-2">
+                        <button onClick={() => handleEdit(exam)} className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-sm rounded transition-colors">✏️ Edit</button>
+                        <button onClick={() => handleDelete(exam.id)} className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition-colors">🗑️ Delete</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
