@@ -2,7 +2,8 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   CalendarIcon, BellIcon, CreditCardIcon, UserIcon, 
-  DocumentTextIcon, LightBulbIcon, ClipboardListIcon 
+  DocumentTextIcon, LightBulbIcon, ClipboardListIcon,
+  ChartBarIcon 
 } from '@heroicons/react/solid';
 import ThemeToggle from './ThemeToggle';
 
@@ -54,7 +55,7 @@ const Dashboard = ({ user }) => {
 
       {/* Main Content */}
       <main className="flex-1 p-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Timetable */}
           <Link to="/timetable" className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 flex items-center space-x-4 hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
             <CalendarIcon className="h-6 w-6 text-blue-500 dark:text-blue-400" />
@@ -124,6 +125,15 @@ const Dashboard = ({ user }) => {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Exams and Marks</h3>
               <p className="text-gray-600 dark:text-gray-300">Check your exam results and scores.</p>
+            </div>
+          </Link>
+
+          {/* Performance Analytics */}
+          <Link to="/performance-analytics" className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 flex items-center space-x-4 hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
+            <ChartBarIcon className="h-6 w-6 text-indigo-500 dark:text-indigo-400" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Performance Analytics</h3>
+              <p className="text-gray-600 dark:text-gray-300">View detailed performance insights.</p>
             </div>
           </Link>
         </div>

@@ -8,6 +8,7 @@ import MockTests from './components/MockTests';
 import Assignments from './components/Assignments';
 import Attendance from './components/Attendance';
 import ExamsAndMarks from './components/ExamsAndMarks';
+import PerformanceAnalytics from './components/PerformanceAnalytics';
 import ProfileDashboard from './components/ProfileDashboard';
 import Notifications from './components/Notifications';
 import Timetable from './components/Timetable';
@@ -24,10 +25,10 @@ const App = () => {
   const schoolLogo = "https://i.pinimg.com/originals/48/a3/54/48a354314bb3517dabc705eb3ee8b968.jpg"; // Sample school logo image
 
   const location = useLocation();
-  const hideHeaderPaths = ["/", "/login", "/signup", "/dashboard"];
+  const hideHeaderPaths = ["/", "/login", "/signup", "/dashboard", "/performance-analytics"];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900">
       {!hideHeaderPaths.includes(location.pathname) && (
         <Header 
           studentName={studentName} 
@@ -43,6 +44,7 @@ const App = () => {
         <Route path="/assignments" element={<Assignments />} />
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/exams-and-marks" element={<ExamsAndMarks />} />
+        <Route path="/performance-analytics" element={<PerformanceAnalytics />} />
         <Route path="/profile" element={<ProfileDashboard />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/timetable" element={<Timetable />} />
