@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import "../styles/tailwind.css"
 
 const ThemeContext = createContext();
 
@@ -23,13 +24,16 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     // Update localStorage when theme changes
+    // console.log("Dark mode changed:", isDarkMode);
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     
     // Update document class for Tailwind dark mode
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
+      // console.log("Dark mode enabled");
     } else {
       document.documentElement.classList.remove('dark');
+      // console.log("Dark mode disabled");
     }
   }, [isDarkMode]);
 
