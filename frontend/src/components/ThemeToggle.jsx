@@ -1,10 +1,13 @@
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import "../styles/tailwind.css"
+
 
 const ThemeToggle = () => {
   const { isDarkMode, toggleTheme } = useTheme();
-
+  console.log(isDarkMode);
   return (
+    <>
     <button
       onClick={toggleTheme}
       className="relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
@@ -44,6 +47,7 @@ const ThemeToggle = () => {
         )}
       </span>
     </button>
+    </>
   );
 };
 

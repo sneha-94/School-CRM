@@ -4,8 +4,9 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; // For G
 import { useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 
+
 // API Base URL
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL  // Adjust based on your backend setup
 
 const Login = () => {
   const navigate = useNavigate();
@@ -109,8 +110,9 @@ const Login = () => {
   };
 
   // Check if Google Client ID is configured
-  const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  const isGoogleConfigured = googleClientId && googleClientId !== 'your-google-client-id-here';
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const isGoogleConfigured = googleClientId && googleClientId !== 'your-google-client-id-here';
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
