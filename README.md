@@ -71,14 +71,24 @@ Welcome to the *School CRM System* project! This system is designed to provide a
 ### 2. *Install Dependencies* 
    Navigate to the project folder and install the necessary packages:
    ```bash
-   cd school-crm-system
+   cd backend
    npm install
    ```
+   ```bash
+   cd frontend
+   npm install
+   ```
+
 
 ### 3. *Run the Application* 
    Start the local development server:
    ```bash
+   cd backend
    npm start
+   ```
+   ```bash
+   cd frontend
+   npm run dev
    ```
    The app will be available at: **http://localhost:3000**
 
