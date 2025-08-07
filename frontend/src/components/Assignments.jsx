@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { AlertCircle, Check, FileText, Upload } from 'lucide-react';
+import SubmissionHistory from './SubmissionHistory'; // ✅ ensure path is correct
 
 export async function getServerSideProps() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/assignments`);
@@ -7,23 +8,25 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      initialAssignments: assignments || [], 
+      initialAssignments: assignments || [],
     },
   };
 }
 
 const Assignments = ({ initialAssignments }) => {
-  const [assignments, setAssignments] = useState(initialAssignments || []); 
+  const [assignments, setAssignments] = useState(initialAssignments || []);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadingAssignmentId, setUploadingAssignmentId] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [notification, setNotification] = useState({ type: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
 
+  const studentId = '123'; // Replace with actual ID from auth or context
+
   const handleFileChange = useCallback((event, assignmentId) => {
     const file = event.target.files[0];
     const allowedExtensions = /(\.pdf|\.doc|\.docx)$/i;
-    
+
     if (!allowedExtensions.exec(file.name)) {
       setNotification({ type: 'error', message: 'Invalid file type. Only PDF, DOC, and DOCX files are allowed.' });
       return;
@@ -45,6 +48,7 @@ const Assignments = ({ initialAssignments }) => {
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('assignmentId', uploadingAssignmentId);
+    formData.append('studentId', studentId); // send studentId
 
     try {
       const response = await fetch('/api/upload-assignment', {
@@ -85,7 +89,7 @@ const Assignments = ({ initialAssignments }) => {
   }, []);
 
   const renderAssignmentList = useCallback((status) => {
-    const filteredAssignments = assignments?.filter((assignment) => assignment.status === status) || [];  // Safely filter assignments
+    const filteredAssignments = assignments?.filter((assignment) => assignment.status === status) || [];
 
     if (filteredAssignments.length === 0) {
       return <p className="text-gray-500 dark:text-gray-400">No {status} assignments.</p>;
@@ -103,7 +107,7 @@ const Assignments = ({ initialAssignments }) => {
           <div className="flex items-center space-x-2">
             {assignment.status === 'pending' && (
               <div className="flex items-center space-x-2">
-                <label className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 py-1 rounded cursor-pointer transition-colors">
+                <label className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded cursor-pointer transition-colors">
                   <Upload className="h-4 w-4" />
                   <span className="text-sm">Upload</span>
                   <input
@@ -114,22 +118,22 @@ const Assignments = ({ initialAssignments }) => {
                   />
                 </label>
                 {!getDueDateStatus(assignment.dueDate) && (
-                  <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
+                  <AlertCircle className="h-5 w-5 text-red-500" />
                 )}
               </div>
             )}
             {assignment.status === 'submitted' && (
               <div className="flex items-center space-x-2">
-                <Check className="h-5 w-5 text-green-500 dark:text-green-400" />
-                <span className="text-sm text-green-600 dark:text-green-400">Submitted</span>
+                <Check className="h-5 w-5 text-green-500" />
+                <span className="text-sm text-green-600">Submitted</span>
                 {assignment.file && (
-                  <FileText className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                  <FileText className="h-4 w-4 text-blue-500" />
                 )}
               </div>
             )}
           </div>
         </div>
-        
+
         {uploadingAssignmentId === assignment.id && (
           <div className="mt-3">
             <div className="flex items-center justify-between mb-2">
@@ -146,7 +150,7 @@ const Assignments = ({ initialAssignments }) => {
               <button
                 onClick={handleFileUpload}
                 disabled={isLoading}
-                className="mt-2 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors disabled:opacity-50"
+                className="mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
               >
                 {isLoading ? 'Submitting...' : 'Submit Assignment'}
               </button>
@@ -158,32 +162,35 @@ const Assignments = ({ initialAssignments }) => {
   }, [assignments, uploadingAssignmentId, selectedFile, uploadProgress, isLoading, handleFileChange, handleFileUpload, getDueDateStatus]);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">Assignments</h2>
-        
+
         {notification.message && (
           <div className={`mb-4 p-3 rounded-lg ${
             notification.type === 'error' 
-              ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
-              : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
+              ? 'bg-red-100 text-red-700 border border-red-200'
+              : 'bg-green-100 text-green-700 border border-green-200'
           }`}>
             {notification.message}
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Pending Assignments */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200">
             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Pending Assignments</h3>
             {renderAssignmentList('pending')}
           </div>
 
-          {/* Submitted Assignments */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200">
             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Submitted Assignments</h3>
             {renderAssignmentList('submitted')}
           </div>
+        </div>
+
+      
+        <div className="mt-10">
+          <SubmissionHistory studentId={studentId} />
         </div>
       </div>
     </div>
@@ -191,3 +198,4 @@ const Assignments = ({ initialAssignments }) => {
 };
 
 export default Assignments;
+
